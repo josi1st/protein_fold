@@ -1,0 +1,19 @@
+{% extends 'prediction/base.html' %}
+{% block title %}Packs d'installation{% endblock %}
+{% block content %}
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Télécharger un pack d'installation</h2>
+    {% if packs %}
+        <div class="grid grid-cols-1 gap-4">
+            {% for pack in packs %}
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <p><strong>Type :</strong> {{ pack.get_pack_type_display }}</p>
+                    <p><strong>Version :</strong> {{ pack.version }}</p>
+                    <p><strong>Description :</strong> {{ pack.description }}</p>
+                    <a href="{{ pack.file.url }}" class="text-blue-500">Télécharger</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-600">Aucun pack disponible.</p>
+    {% endif %}
+{% endblock %}

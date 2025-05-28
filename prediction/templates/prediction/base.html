@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProteinFold - {% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/ngl@2.0.0/dist/ngl.js"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f5f7fa; }
+        .navbar { background-color: #1e3a8a; }
+        .btn-primary { background-color: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; }
+        .btn-primary:hover { background-color: #2563eb; }
+    </style>
+</head>
+<body>
+    <nav class="navbar p-4 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{% url 'prediction:home' %}" class="text-2xl font-bold">ProteinFold</a>
+            <div>
+                {% if user.is_authenticated %}
+                    <span class="mr-4">Bienvenue, {{ user.username }}</span>
+                    <a href="{% url 'prediction:submit' %}" class="mr-4">Soumettre</a>
+                    <a href="{% url 'prediction:history' %}" class="mr-4">Historique</a>
+                    <a href="{% url 'prediction:packs' %}" class="mr-4">Packs</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'prediction:admin_manage' %}" class="mr-4">Admin</a>
+                    {% endif %}
+                    <a href="{% url 'prediction:logout' %}" class="btn-primary">Déconnexion</a>
+                {% else %}
+                    <a href="{% url 'prediction:login' %}" class="mr-4">Connexion</a>
+                    <a href="{% url 'prediction:register' %}" class="btn-primary">Inscription</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="bg-{{ message.tags }}-100 border-l-4 border-{{ message.tags }}-500 text-{{ message.tags }}-700 p-4 mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <main class="container mx-auto mt-8">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer class="bg-gray-800 text-white p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>© 2025 ProteinFold. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+</html>

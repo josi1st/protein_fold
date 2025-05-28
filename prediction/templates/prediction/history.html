@@ -1,0 +1,25 @@
+{% extends 'prediction/base.html' %}
+{% block title %}Historique{% endblock %}
+{% block content %}
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Historique des prédictions</h2>
+    {% if predictions %}
+        <div class="grid grid-cols-1 gap-4">
+            {% for prediction in predictions %}
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <p><strong>Séquence :</strong> {{ prediction.sequence|truncatechars:50 }}</p>
+                    <p><strong>Statut :</strong> {{ prediction.get_status_display }}</p>
+                    <p><strong>Score LDDT :</strong> {{ prediction.lddt_score|default:"N/A" }}</p>
+                    <p><strong>Date :</strong> {{ prediction.created_at }}</p>
+                    <div class="mt-2">
+                        {% if prediction.pdb_file %}
+                            <a href="{{ prediction.pdb_file.url }}" class="text-blue-500 mr-2">Télécharger PDB</a>
+                        {% endif %}
+                        <a href="{% url 'prediction:visualize' prediction.id %}" class="text-blue-500">Visualiser</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-600">Aucune prédiction disponible.</p>
+    {% endif %}
+{% endblock %}
