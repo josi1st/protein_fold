@@ -3,28 +3,28 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 # Modèle pour les utilisateurs (hérité de User de Django)
-class User(models.Model):
-    id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=128)  # Haché par Django
-    email = models.EmailField(unique=True)
-    date_inscription = models.DateTimeField(auto_now_add=True)
+# class User(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     username = models.CharField(max_length=150, unique=True)
+#     password = models.CharField(max_length=128)  # Haché par Django
+#     email = models.EmailField(unique=True)
+#     # date_inscription = models.DateTimeField(auto_now_add=True)
 
-    def set_password(self, raw_password):
-        """Définit le mot de passe en le hachant."""
-        self.password = self.set_password(raw_password)
+#     def set_password(self, raw_password):
+#         """Définit le mot de passe en le hachant."""
+#         self.password = self.set_password(raw_password)
 
-    def check_password(self, raw_password):
-        """Vérifie si le mot de passe correspond au hachage."""
-        return self.check_password(raw_password)
+#     def check_password(self, raw_password):
+#         """Vérifie si le mot de passe correspond au hachage."""
+#         return self.check_password(raw_password)
 
-    def __str__(self):
-        return self.username
+#     def __str__(self):
+#         return self.username
 
-    class Meta:
-        # Utilisation du modèle User de Django à la place
-        managed = False
-        db_table = 'auth_user'
+#     class Meta:
+#         # Utilisation du modèle User de Django à la place
+#         managed = False
+#         db_table = 'auth_user'
 
 # Modèle pour les prédictions de protéines
 class ProteinPrediction(models.Model):
@@ -84,19 +84,19 @@ class DownloadLog(models.Model):
     def __str__(self):
         return f"Téléchargement {self.id} par {self.user_id_fk.username}"
 
-# Modèle pour les sessions (géré par Django)
-class Session(models.Model):
-    cle_session = models.CharField(max_length=40, primary_key=True)
-    user_id_fk = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_expiration = models.DateTimeField()
+# # Modèle pour les sessions (géré par Django)
+# class Session(models.Model):
+#     cle_session = models.CharField(max_length=40, primary_key=True)
+#     user_id_fk = models.ForeignKey(User, on_delete=models.CASCADE)
+#     date_expiration = models.DateTimeField()
 
-    def get_session_key(self):
-        """Décode les données de session (simplifié)."""
-        from django.contrib.sessions.models import Session as DjangoSession
-        session = DjangoSession.objects.get(session_key=self.cle_session)
-        return session.get_decoded()
+#     def get_session_key(self):
+#         """Décode les données de session (simplifié)."""
+#         from django.contrib.sessions.models import Session as DjangoSession
+#         session = DjangoSession.objects.get(session_key=self.cle_session)
+#         return session.get_decoded()
 
-    class Meta:
-        # Utilisation du modèle Session de Django à la place
-        managed = False
-        db_table = 'django_session'
+#     class Meta:
+#         # Utilisation du modèle Session de Django à la place
+#         managed = False
+#         db_table = 'django_session'

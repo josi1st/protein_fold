@@ -2,14 +2,57 @@
 {% block title %}Visualisation{% endblock %}
 {% block content %}
     <h2 class="text-2xl font-bold text-gray-800 mb-4">Visualisation de la structure</h2>
-    <div id="viewport" style="width: 100%; height: 500px;"></div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const stage = new NGL.Stage('viewport');
-            stage.loadFile("{{ prediction.pdb_file.url }}", { ext: 'pdb' }).then(function(component) {
-                component.addRepresentation('cartoon');
-                component.autoView();
+    {% if prediction.pdb_file and prediction.status == 'COMPLETED' %}
+        <div id="viewport" style="width: 100%; height: 500px; background-color: #f0f0f0; border: 1px solid #ccc;"></div>
+        <div id="error-message" class="text-red-500 mt-2"></div>
+        <script>
+            function loadStructure() {
+                console.log("Début du chargement de NGLView...");
+                const pdbUrl = "{{ prediction.pdb_file.url | safe }}";
+                console.log("URL du fichier PDB :", pdbUrl);
+
+                if (typeof NGL === 'undefined') {
+                    document.getElementById('error-message').innerHTML = "Erreur : La bibliothèque NGLView n'est pas chargée.";
+                    console.error("NGL n'est pas défini.");
+                    return;
+                }
+
+                fetch(pdbUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Impossible de charger le fichier PDB : " + response.statusText);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log("Fichier PDB chargé avec succès :", data.substring(0, 100) + "...");
+                        const stage = new NGL.Stage('viewport', { backgroundColor: 'white' });
+                        stage.loadFile(pdbUrl, { ext: 'pdb' }).then(function(component) {
+                            console.log("Structure chargée dans NGLView.");
+                            try {
+                                component.addRepresentation('cartoon', { color: 'blue' });
+                                component.autoView();
+                                console.log("Représentation 'cartoon' ajoutée et vue ajustée.");
+                            } catch (renderError) {
+                                console.error("Erreur lors du rendu :", renderError);
+                                document.getElementById('error-message').innerHTML = "Erreur lors du rendu : " + renderError.message;
+                            }
+                        }).catch(function(loadError) {
+                            console.error("Erreur lors du chargement de la structure :", loadError);
+                            document.getElementById('error-message').innerHTML = "Erreur lors du chargement : " + loadError.message;
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Erreur lors du chargement du fichier PDB :", error);
+                        document.getElementById('error-message').innerHTML = "Erreur lors du chargement du fichier PDB : " + error.message;
+                    });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                loadStructure();
             });
-        });
-    </script>
+        </script>
+    {% else %}
+        <p class="text-red-500">Aucun fichier PDB disponible ou prédiction échouée.</p>
+    {% endif %}
 {% endblock %}

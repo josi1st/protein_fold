@@ -1,0 +1,19 @@
+HEADER    EXAMPLE PROTEIN                         30-MAY-25   XXXX
+TITLE     SMALL ALPHA HELIX FOR TESTING
+ATOM      1  N   ALA A   1       0.000   0.000   0.000  1.00 20.00           N
+ATOM      2  CA  ALA A   1       1.458   0.000   0.000  1.00 20.00           C
+ATOM      3  C   ALA A   1       2.009   1.387   0.000  1.00 20.00           C
+ATOM      4  O   ALA A   1       1.314   2.366   0.000  1.00 20.00           O
+ATOM      5  CB  ALA A   1       2.168  -0.759   1.152  1.00 20.00           C
+ATOM      6  N   ALA A   2       3.264   1.530   0.000  1.00 20.00           N
+ATOM      7  CA  ALA A   2       3.816   2.917   0.000  1.00 20.00           C
+ATOM      8  C   ALA A   2       3.110   3.676   1.152  1.00 20.00           C
+ATOM      9  O   ALA A   2       2.414   3.146   2.020  1.00 20.00           O
+ATOM     10  CB  ALA A   2       5.326   2.917   0.000  1.00 20.00           C
+ATOM     11  N   ALA A   3       3.266   4.956   1.152  1.00 20.00           N
+ATOM     12  CA  ALA A   3       2.560   5.714   2.304  1.00 20.00           C
+ATOM     13  C   ALA A   3       1.050   5.714   2.304  1.00 20.00           C
+ATOM     14  O   ALA A   3       0.354   5.184   3.156  1.00 20.00           O
+ATOM     15  CB  ALA A   3       3.110   7.101   2.304  1.00 20.00           C
+TER
+END

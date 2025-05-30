@@ -6,7 +6,7 @@
         <form method="post">
             {% csrf_token %}
             <div class="mb-4">
-                <label for="sequence" class="block text-gray-700">Séquence d’acides aminés</label>
+                <label for="sequence" class="block text-gray-700">Séquence d'acides aminés</label>
                 <textarea name="sequence" id="sequence" rows="5" class="w-full p-2 border rounded" placeholder="Entrez une séquence (A,C,D,...,Y)" required></textarea>
             </div>
             <button type="submit" class="btn-primary w-full">Lancer la prédiction</button>
