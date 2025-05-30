@@ -30,9 +30,11 @@
                         stage.loadFile(pdbUrl, { ext: 'pdb' }).then(function(component) {
                             console.log("Structure chargée dans NGLView.");
                             try {
+                                // Essayer une représentation plus simple
+                                component.addRepresentation('ball+stick', { color: 'red' });
                                 component.addRepresentation('cartoon', { color: 'blue' });
                                 component.autoView();
-                                console.log("Représentation 'cartoon' ajoutée et vue ajustée.");
+                                console.log("Représentations 'ball+stick' et 'cartoon' ajoutées, vue ajustée.");
                             } catch (renderError) {
                                 console.error("Erreur lors du rendu :", renderError);
                                 document.getElementById('error-message').innerHTML = "Erreur lors du rendu : " + renderError.message;
