@@ -13,4 +13,7 @@ urlpatterns = [
     path('visualize/<int:prediction_id>/', views.visualize_structure, name='visualize'),
     path('packs/', views.download_packs, name='packs'),
     path('admin-manage/', views.admin_manage, name='admin_manage'),
+    path('admin/packs/upload/', views.upload_model_pack, name='upload_model_pack'),
+    path('admin/packs/', views.admin_packs, name='admin_packs'),
+    path('admin/packs/delete/<int:pack_id>/', views.admin_delete_pack, name='admin_delete_pack'),
 ]

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Téléverser un Pack de Modèle</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-container { max-width: 500px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; }
+        .btn { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Téléverser un Pack de Modèle</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="version">Version</label>
+                <input type="text" id="version" name="version" required>
+            </div>
+            <div class="form-group">
+                <label for="pack_type">Type de Pack</label>
+                <select id="pack_type" name="pack_type" required>
+                    <option value="LOCAL">Local (PC)</option>
+                    <option value="MICROCONTROLLER">Microcontrôleur (Raspberry Pi)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="file">Fichier .zip</label>
+                <input type="file" id="file" name="file" accept=".zip" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn">Téléverser</button>
+        </form>
+        <a href="{% url 'prediction:admin_packs' %}">Retour à la liste des packs</a>
+    </div>
+</body>
+</html>

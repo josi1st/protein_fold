@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestion des Packs</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .pack-list { margin-top: 20px; }
+        .pack-item { margin-bottom: 10px; }
+        .btn { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; text-decoration: none; }
+        .btn:hover { background-color: #45a049; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h2>Gestion des Packs de Modèle</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <a href="{% url 'prediction:upload_model_pack' %}" class="btn">Téléverser un Nouveau Pack</a>
+    <div class="pack-list">
+        {% if packs %}
+            {% for pack in packs %}
+                <div class="pack-item">
+                    <p>{{ pack }} - Type: {{ pack.get_pack_type_display }} - Mise à jour: {{ pack.date_mise_a_jour }}</p>
+                    <p>Description: {{ pack.description }}</p>
+                    <a href="{{ pack.file.url }}" download class="btn">Télécharger</a>
+                    <form method="post" action="{% url 'prediction:admin_delete_pack' pack.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce pack ?');">Supprimer</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucun pack disponible.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

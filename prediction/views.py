@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import ProteinPrediction, ModelInstallationPack, DownloadLog
 from django.contrib.auth.models import User
-import os
 from django.conf import settings
 import os
 from .modules.pytorch.scripts.predict_structure import predict_structure
+import zipfile
 
 def is_admin(user):
     """Vérifie si l'utilisateur est administrateur."""
@@ -118,3 +118,63 @@ def admin_manage(request):
             messages.success(request, "Prédiction supprimée.")
         return redirect('prediction:admin_manage')
     return render(request, 'prediction/admin_manage.html', {'users': users, 'predictions': predictions})
+
+
+@login_required
+@user_passes_test(is_admin)
+def upload_model_pack(request):
+    """Permet à l'administrateur de téléverser un pack de modèle."""
+    if request.method == 'POST':
+        version = request.POST.get('version')
+        pack_type = request.POST.get('pack_type')
+        file = request.FILES.get('file')
+        description = request.POST.get('description')
+
+        # Vérifications
+        if not version or not pack_type or not file or not description:
+            messages.error(request, "Tous les champs sont obligatoires !")
+            return redirect('prediction:upload_model_pack')
+
+        if not file.name.endswith('.zip'):
+            messages.error(request, "Le fichier doit être un fichier .zip !")
+            return redirect('prediction:upload_model_pack')
+
+        try:
+            with zipfile.ZipFile(file, 'r') as zip_ref:
+                zip_contents = zip_ref.namelist()
+                required_files = ['omega.pth', 'predictor.pth']  # Fichiers requis dans le .zip
+                if not all(file in zip_contents for file in required_files):
+                    messages.error(request, "Le fichier .zip doit contenir omega.pth et predictor.pth !")
+                    return redirect('prediction:upload_model_pack')
+        except zipfile.BadZipFile:
+            messages.error(request, "Fichier .zip invalide ou corrompu !")
+            return redirect('prediction:upload_model_pack')
+
+        # Sauvegarde du pack
+        pack = ModelInstallationPack(
+            version=version,
+            pack_type=pack_type,
+            file=file,
+            description=description
+        )
+        pack.sauvegarder()  # Utilise la méthode personnalisée
+        messages.success(request, f"Pack v{version} téléversé avec succès !")
+        return redirect('prediction:admin_packs')
+
+    return render(request, 'prediction/admin/upload_model_pack.html')
+
+@login_required
+@user_passes_test(is_admin)
+def admin_packs(request):
+    """Affiche et gère les packs disponibles pour l'administrateur."""
+    packs = ModelInstallationPack.objects.all()
+    return render(request, 'prediction/admin/packs.html', {'packs': packs})
+
+@login_required
+@user_passes_test(is_admin)
+def admin_delete_pack(request, pack_id):
+    """Supprime un pack de modèle."""
+    pack = get_object_or_404(ModelInstallationPack, id=pack_id)
+    pack.supprimer()  # Utilise la méthode personnalisée
+    messages.success(request, f"Pack {pack.version} supprimé avec succès !")
+    return redirect('prediction:admin_packs')
