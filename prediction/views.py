@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import ProteinPrediction, ModelInstallationPack, DownloadLog, User
+from .models import ProteinPrediction, ModelInstallationPack, DownloadLog
+from django.contrib.auth.models import User
 import os
+from django.conf import settings
+import os
+from .modules.pytorch.scripts.predict_structure import predict_structure
 
 def is_admin(user):
     """Vérifie si l'utilisateur est administrateur."""
@@ -50,7 +54,6 @@ def user_logout(request):
 
 @login_required
 def submit_sequence(request):
-    """Gère la soumission d'une séquence pour prédiction."""
     if request.method == 'POST':
         sequence = request.POST['sequence'].strip().upper()
         valid_residues = set("ACDEFGHIKLMNPQRSTVWY")
@@ -58,10 +61,15 @@ def submit_sequence(request):
             messages.error(request, "Séquence invalide. Utilisez uniquement A,C,D,...,Y.")
             return redirect('prediction:submit')
         prediction = ProteinPrediction.objects.create(user=request.user, sequence=sequence)
-        prediction.status = 'COMPLETED'  # Simulation, à remplacer par ton modèle
-        prediction.pdb_file.name = 'predictions/example.pdb'  # À remplacer
+        try:
+            output_filename = predict_structure(sequence)
+            prediction.pdb_file.name = output_filename
+            prediction.status = 'COMPLETED'
+        except Exception as e:
+            prediction.status = 'FAILED'
+            messages.error(request, f"Erreur lors de la prédiction : {str(e)}")
         prediction.save()
-        messages.success(request, "Prédiction terminée !")
+        messages.success(request, "Prédiction terminée !" if prediction.status == 'COMPLETED' else "Prédiction échouée.")
         return redirect('prediction:history')
     return render(request, 'prediction/submit.html')
 
